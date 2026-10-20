@@ -135,7 +135,7 @@
     [[-20,-25,'blue'],[20,-25,'blue'],[-22,-18,'blue'],[22,18,'red'],[-20,22,'red'],[20,25,'red']].forEach(([x,z,t],i)=>{const b=makeBot(x,z,t==='blue'?cyan:pink,t);b.phase=i*1.7;b.strafe=1+(i%2)*.7;bots.push(b);});
     const arenaObjects=scene.children.filter(object=>object!==camera);arenaObjects.forEach(object=>object.visible=false);
     const arenaMapGroup=new THREE.Group();scene.add(arenaMapGroup);
-    const arenaMapMat=mat(0x9ca9c4), arenaMapDark=mat(0x3d5c98), arenaMapEdge=mat(0xd7e3f2);
+    const arenaMapMat=mat(0xd3d7dc), arenaMapDark=mat(0x68778b), arenaMapEdge=mat(0xe9edf0);
     function arenaMapBox(x,y,z,px,py,pz,material){const m=new THREE.Mesh(new THREE.BoxGeometry(x,y,z),material);m.position.set(px,py,pz);m.castShadow=true;m.receiveShadow=true;arenaMapGroup.add(m);return m;}
     arenaMapBox(60,1,60,0,-.5,0,arenaMapMat);
     arenaMapBox(60,7,1,0,3.5,-30,arenaMapEdge);arenaMapBox(60,7,1,0,3.5,30,arenaMapEdge);arenaMapBox(1,7,60,-30,3.5,0,arenaMapEdge);arenaMapBox(1,7,60,30,3.5,0,arenaMapEdge);
@@ -145,6 +145,9 @@
     arenaMapBox(3,2,7,-6,1,-17,arenaMapEdge);arenaMapBox(10,2,3,8,1,-1,arenaMapEdge);arenaMapBox(3,2,8,-10,1,-3,arenaMapEdge);
     arenaMapBox(3,2,7,6,1,17,arenaMapEdge);arenaMapBox(8,2,3,-8,1,7,arenaMapEdge);arenaMapBox(3,2,7,18,1,3,arenaMapEdge);
     arenaMapBox(10,.25,.35,0,5,-29.4,mat(cyan,cyan));arenaMapBox(10,.25,.35,0,5,29.4,mat(pink,pink));
+    arenaMapGroup.add(new THREE.HemisphereLight(0xffffff,0x9aa6b5,4.8));
+    const arenaMapSun=new THREE.DirectionalLight(0xffffff,5.5);arenaMapSun.position.set(-18,30,14);arenaMapSun.castShadow=true;arenaMapGroup.add(arenaMapSun);
+    arenaMapGroup.add(new THREE.AmbientLight(0xffffff,1.4));
     arenaMapGroup.visible=false;
     const lobbyGroup=new THREE.Group();scene.add(lobbyGroup);const lobbyFloor=new THREE.Mesh(new THREE.CylinderGeometry(26,26,.6,48),mat(0x4166a8));lobbyFloor.position.y=-.3;lobbyFloor.receiveShadow=true;lobbyGroup.add(lobbyFloor);const lobbyRing=new THREE.Mesh(new THREE.TorusGeometry(17,.18,8,64),mat(cyan,cyan));lobbyRing.rotation.x=Math.PI/2;lobbyRing.position.y=.05;lobbyGroup.add(lobbyRing);const lobbyCenter=new THREE.Mesh(new THREE.CylinderGeometry(7.2,7.2,.5,48),mat(0x253c78,purple));lobbyCenter.position.y=.25;lobbyCenter.receiveShadow=true;lobbyGroup.add(lobbyCenter);const lobbyCore=new THREE.Mesh(new THREE.CylinderGeometry(5.7,5.7,.18,48),mat(0x4e73b8,cyan));lobbyCore.position.y=.55;lobbyGroup.add(lobbyCore);const coreGlow=new THREE.PointLight(cyan,8,22);coreGlow.position.set(0,2,0);lobbyGroup.add(coreGlow);const innerRing=new THREE.Mesh(new THREE.TorusGeometry(6.6,.22,8,48),mat(cyan,cyan));innerRing.rotation.x=Math.PI/2;innerRing.position.y=.65;lobbyGroup.add(innerRing);
     function lobbyBox(x,y,z,px,py,pz,color,emissive=0){const m=new THREE.Mesh(new THREE.BoxGeometry(x,y,z),mat(color,emissive));m.position.set(px,py,pz);m.castShadow=true;m.receiveShadow=true;lobbyGroup.add(m);return m;}
