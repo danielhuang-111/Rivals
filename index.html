@@ -135,7 +135,7 @@
     [[-20,-25,'blue'],[20,-25,'blue'],[-22,-18,'blue'],[22,18,'red'],[-20,22,'red'],[20,25,'red']].forEach(([x,z,t],i)=>{const b=makeBot(x,z,t==='blue'?cyan:pink,t);b.phase=i*1.7;b.strafe=1+(i%2)*.7;bots.push(b);});
     const arenaObjects=scene.children.filter(object=>object!==camera);arenaObjects.forEach(object=>object.visible=false);
     const arenaMapGroup=new THREE.Group();scene.add(arenaMapGroup);
-    const arenaMapMat=mat(0xd3d7dc), arenaMapDark=mat(0x68778b), arenaMapEdge=mat(0xe9edf0);
+    const arenaMapMat=mat(0xbcbcbc), arenaMapDark=mat(0x707070), arenaMapEdge=mat(0xe2e2e2), arenaMapAccent=mat(0x999999);
     function arenaMapBox(x,y,z,px,py,pz,material,rotation=0){const m=new THREE.Mesh(new THREE.BoxGeometry(x,y,z),material);m.position.set(px,py,pz);m.rotation.y=rotation;m.castShadow=true;m.receiveShadow=true;arenaMapGroup.add(m);return m;}
     arenaMapBox(60,1,60,0,-.5,0,arenaMapMat);
     arenaMapBox(60,7,1,0,3.5,-30,arenaMapEdge);arenaMapBox(60,7,1,0,3.5,30,arenaMapEdge);arenaMapBox(1,7,60,-30,3.5,0,arenaMapEdge);arenaMapBox(1,7,60,30,3.5,0,arenaMapEdge);
@@ -149,7 +149,7 @@
     arenaMapBox(7,2,2,-8,1,-14,arenaMapEdge,-.45);arenaMapBox(7,2,2,9,1,14,arenaMapEdge,.45);
     arenaMapBox(5,2,2,-22,1,-7,arenaMapEdge,.35);arenaMapBox(5,2,2,22,1,9,arenaMapEdge,-.35);
     arenaMapBox(4,2,4,-22,1,16,arenaMapDark);arenaMapBox(4,2,4,22,1,-17,arenaMapDark);
-    arenaMapBox(10,.25,.35,0,5,-29.4,mat(cyan,cyan));arenaMapBox(10,.25,.35,0,5,29.4,mat(pink,pink));
+    arenaMapBox(10,.25,.35,0,5,-29.4,arenaMapAccent);arenaMapBox(10,.25,.35,0,5,29.4,arenaMapAccent);
     arenaMapGroup.add(new THREE.HemisphereLight(0xffffff,0x9aa6b5,4.8));
     const arenaMapSun=new THREE.DirectionalLight(0xffffff,5.5);arenaMapSun.position.set(-18,30,14);arenaMapSun.castShadow=true;arenaMapGroup.add(arenaMapSun);
     arenaMapGroup.add(new THREE.AmbientLight(0xffffff,1.4));
