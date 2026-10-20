@@ -88,7 +88,7 @@
     box(9,3,3,18,1.5,-13,mat(0x28396f)); box(9,3,3,-18,1.5,13,mat(0x4b294d));
     for(const [x,z,c] of [[-25,-22,cyan],[25,22,pink],[-25,22,cyan],[25,-22,pink]]) { cylinder(2.1,.45,x,.3,z,mat(c,c)); cylinder(.25,3,x,2,z,mat(c,c)); }
     const solidAreas=[{x:-17,z:-10,w:12,d:2,h:4},{x:17,z:10,w:12,d:2,h:4},{x:-8,z:-19,w:3,d:10,h:5},{x:8,z:19,w:3,d:10,h:5},{x:18,z:-13,w:9,d:3,h:3},{x:-18,z:13,w:9,d:3,h:3}];
-    const arenaSolidAreas=[{x:0,z:0,w:12,d:10,h:4},{x:-16,z:-13,w:8,d:3,h:3},{x:15,z:-13,w:7,d:3,h:4},{x:-15,z:12,w:8,d:3,h:3},{x:15,z:12,w:8,d:3,h:3},{x:-6,z:17,w:3,d:7,h:2},{x:8,z:-1,w:10,d:3,h:2},{x:-10,z:-3,w:3,d:8,h:2}];
+    const arenaSolidAreas=[{x:0,z:0,w:12,d:10,h:4},{x:-16,z:-13,w:8,d:3,h:3},{x:15,z:-13,w:7,d:3,h:4},{x:-15,z:12,w:8,d:3,h:3},{x:15,z:12,w:8,d:3,h:3},{x:-6,z:17,w:3,d:7,h:2},{x:8,z:-1,w:10,d:3,h:2},{x:-10,z:-3,w:3,d:8,h:2},{x:0,z:-9,w:10,d:2,h:3},{x:0,z:9,w:10,d:2,h:3},{x:-17,z:0,w:3,d:12,h:3},{x:17,z:3,w:3,d:12,h:3},{x:-8,z:-14,w:7,d:3,h:2},{x:9,z:14,w:7,d:3,h:2}];
     let activeSolidAreas=solidAreas;
     function blocked(pos){if(pos.x<-28.4||pos.x>28.4||pos.z<-28.4||pos.z>28.4)return true;return activeSolidAreas.some(a=>Math.abs(pos.x-a.x)<a.w/2+.65&&Math.abs(pos.z-a.z)<a.d/2+.65&&pos.y< a.h+1.2);}
     function landOnObstacle(previousY){for(const a of activeSolidAreas){const inside=Math.abs(player.pos.x-a.x)<a.w/2+.5&&Math.abs(player.pos.z-a.z)<a.d/2+.5;const top=a.h+1.2;if(inside&&player.pos.y<=top&&previousY>=top&&player.vertical<=0){player.pos.y=top;player.vertical=0;player.grounded=true;return true;}}return false;}
@@ -136,14 +136,19 @@
     const arenaObjects=scene.children.filter(object=>object!==camera);arenaObjects.forEach(object=>object.visible=false);
     const arenaMapGroup=new THREE.Group();scene.add(arenaMapGroup);
     const arenaMapMat=mat(0xd3d7dc), arenaMapDark=mat(0x68778b), arenaMapEdge=mat(0xe9edf0);
-    function arenaMapBox(x,y,z,px,py,pz,material){const m=new THREE.Mesh(new THREE.BoxGeometry(x,y,z),material);m.position.set(px,py,pz);m.castShadow=true;m.receiveShadow=true;arenaMapGroup.add(m);return m;}
+    function arenaMapBox(x,y,z,px,py,pz,material,rotation=0){const m=new THREE.Mesh(new THREE.BoxGeometry(x,y,z),material);m.position.set(px,py,pz);m.rotation.y=rotation;m.castShadow=true;m.receiveShadow=true;arenaMapGroup.add(m);return m;}
     arenaMapBox(60,1,60,0,-.5,0,arenaMapMat);
     arenaMapBox(60,7,1,0,3.5,-30,arenaMapEdge);arenaMapBox(60,7,1,0,3.5,30,arenaMapEdge);arenaMapBox(1,7,60,-30,3.5,0,arenaMapEdge);arenaMapBox(1,7,60,30,3.5,0,arenaMapEdge);
     arenaMapBox(12,4,10,0,2,0,arenaMapDark);
+    arenaMapBox(10,3,2,0,1.5,-9,arenaMapDark);arenaMapBox(10,3,2,0,1.5,9,arenaMapDark);
+    arenaMapBox(3,3,12,-17,1.5,0,arenaMapDark);arenaMapBox(3,3,12,17,1.5,3,arenaMapDark);
     arenaMapBox(8,3,3,-16,1.5,-13,arenaMapDark);arenaMapBox(7,4,3,15,2,-13,arenaMapDark);
     arenaMapBox(8,3,3,-15,1.5,12,arenaMapDark);arenaMapBox(8,3,3,15,1.5,12,arenaMapDark);
     arenaMapBox(3,2,7,-6,1,-17,arenaMapEdge);arenaMapBox(10,2,3,8,1,-1,arenaMapEdge);arenaMapBox(3,2,8,-10,1,-3,arenaMapEdge);
     arenaMapBox(3,2,7,6,1,17,arenaMapEdge);arenaMapBox(8,2,3,-8,1,7,arenaMapEdge);arenaMapBox(3,2,7,18,1,3,arenaMapEdge);
+    arenaMapBox(7,2,2,-8,1,-14,arenaMapEdge,-.45);arenaMapBox(7,2,2,9,1,14,arenaMapEdge,.45);
+    arenaMapBox(5,2,2,-22,1,-7,arenaMapEdge,.35);arenaMapBox(5,2,2,22,1,9,arenaMapEdge,-.35);
+    arenaMapBox(4,2,4,-22,1,16,arenaMapDark);arenaMapBox(4,2,4,22,1,-17,arenaMapDark);
     arenaMapBox(10,.25,.35,0,5,-29.4,mat(cyan,cyan));arenaMapBox(10,.25,.35,0,5,29.4,mat(pink,pink));
     arenaMapGroup.add(new THREE.HemisphereLight(0xffffff,0x9aa6b5,4.8));
     const arenaMapSun=new THREE.DirectionalLight(0xffffff,5.5);arenaMapSun.position.set(-18,30,14);arenaMapSun.castShadow=true;arenaMapGroup.add(arenaMapSun);
