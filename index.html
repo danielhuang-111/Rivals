@@ -177,25 +177,7 @@
     function doQuickMelee(){ if(gameMode==='lobby'||player.quickMeleeTimer>0)return; const current=player.slot; const target = player.meleeChoice===4?4:2; if(current===target){ weaponAnim.swing=1.2; hitBot(); return; } player.prevSlot=current; player.slot=target; player.aimHold=false; player.aimKey=false; player.reloading=false; updateAim(); const w=weapons[player.slot]; weaponName.innerHTML=w.name+(player.slot===0?' <span style="color:#6cd9ff">▰▰▰</span>':''); slotLabel.textContent=w.slot+' · '+(player.slot+1); updateAmmoHud(); rebuildWeapon(); weaponAnim.swing=1.2; hitBot(); player.quickMeleeTimer=0.5; }
     const move=new THREE.Vector3(), clock=new THREE.Clock();
     document.getElementById('playMenu').onclick=()=>{document.getElementById('start').classList.add('choosing');document.getElementById('playMenu').style.display='none';document.getElementById('modePicker').style.display='block';document.getElementById('lobbyText').textContent='Choose where you want to play.';}; document.getElementById('arenaMode').onclick=()=>startGame('arena'); document.getElementById('battlegroundMode').onclick=()=>startGame('battleground'); document.getElementById('rangeMode').onclick=()=>startGame('range'); document.getElementById('loadoutMelee').onchange=e=>player.meleeChoice=Number(e.target.value);
-    document.getElementById('settingsButton').onclick=()=>{settings.classList.toggle('open');if(!settings.classList.contains('open')&&gameMode!=='lobby'&&locked)try{renderer.domElement.requestPointerLock();}catch(e){}};
-    document.getElementById('closeSettings').onclick=()=>{settings.classList.remove('open');if(gameMode!=='lobby'&&locked){try{renderer.domElement.requestPointerLock();}catch(e){}}};
-    addEventListener('keydown',e=>{
-      if(e.code==='Escape'){
-        if(settings.classList.contains('open')){
-          e.preventDefault();
-          settings.classList.remove('open');
-          return;
-        }
-        if(gameMode!=='lobby'){
-          if(document.pointerLockElement===renderer.domElement){
-            document.exitPointerLock();
-          }else{
-            try{renderer.domElement.requestPointerLock();}catch(e){}
-          }
-          return;
-        }
-      }
-    });
+    document.getElementById('settingsButton').onclick=()=>{settings.classList.toggle('open');if(!settings.classList.contains('open')&&locked)renderer.domElement.requestPointerLock();}; document.getElementById('closeSettings').onclick=()=>{settings.classList.remove('open');if(locked)renderer.domElement.requestPointerLock();}; addEventListener('keydown',e=>{if(e.code==='Escape'){if(settings.classList.contains('open')){e.preventDefault();settings.classList.remove('open');if(gameMode!=='lobby')renderer.domElement.requestPointerLock();}else if(gameMode!=='lobby'&&!locked){e.preventDefault();renderer.domElement.requestPointerLock();}}});
     document.getElementById('sensitivity').oninput=e=>{player.sensitivity=Number(e.target.value);document.getElementById('sensitivityValue').textContent=player.sensitivity.toFixed(1);}; document.getElementById('scopeSensitivity').oninput=e=>{player.scopeSensitivity=Number(e.target.value);document.getElementById('scopeSensitivityValue').textContent=player.scopeSensitivity.toFixed(1);}; document.getElementById('crosshairColor').onchange=updateCrosshair; document.getElementById('crosshairStyle').onchange=updateCrosshair; updateCrosshair();
     document.addEventListener('pointerlockchange',()=>{locked=document.pointerLockElement===renderer.domElement;if(gameMode==='lobby'&&!locked)document.getElementById('start').style.display='grid';});
     document.addEventListener('mousemove',e=>{if(!locked)return;const lookSensitivity=player.aiming?player.scopeSensitivity:player.sensitivity;player.yaw-=e.movementX*.0022*lookSensitivity;player.pitch-=e.movementY*.0022*lookSensitivity;player.pitch=Math.max(-1.35,Math.min(1.35,player.pitch));});
