@@ -1,6 +1,10 @@
 # Project instructions
 
-This is a single-file browser game: `index.html` (Three.js loaded from a CDN, no build step).
+This is a static browser game with no build step (Three.js loaded from a CDN):
+
+- `index.html` — markup/HUD only
+- `style.css` — all styling
+- `game.js` — the game module (ES module, imported by `index.html`)
 
 ## Always push changes
 
