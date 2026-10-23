@@ -160,7 +160,7 @@ function update(dt){
   player.walkBlend+=(((dir.lengthSq()>0)&&!player.sliding?1:0)-player.walkBlend)*Math.min(1,dt*10);
   if(player.fly){
     // Fly mode: Space rises, Ctrl/C sinks, gravity is off. Turning it off restores normal falling.
-    const rise=(keys.Space?1:0)-((keys.ControlLeft||keys.KeyC)?1:0);
+    const rise=(keys.Space?1:0)-((keys.ShiftLeft||keys.ControlLeft||keys.KeyC)?1:0);
     player.vertical=0;
     player.grounded=false;
     player.crouching=false;
@@ -183,6 +183,17 @@ function update(dt){
 }
 /* ---------------- DEBUG CONSOLE (Right Shift) ---------------- */
 const dbg={open:false,fps:0,frames:0,acc:0,log:[],history:[],hIndex:0,prev:player.pos.clone(),prevT:performance.now(),speed:0};
+const DEBUG_PASSWORD='rivalsgood123';
+let dbgAuthed=false;
+try{dbgAuthed=sessionStorage.getItem('beathim-debug-auth')==='1';}catch(error){dbgAuthed=false;}
+const dbgAuth=document.createElement('div');
+dbgAuth.id='debugAuth';
+dbgAuth.innerHTML='<div class="dbg-head"><b>DEBUG ACCESS</b><span class="dbg-hint">RIGHT SHIFT close</span></div>'
+  +'<div class="dbg-row"><span class="dbg-caret">#</span><input id="dbgPass" type="password" autocomplete="off" spellcheck="false" placeholder="password" /></div>'
+  +'<div class="dbg-authrow"><button class="dbg-btn" data-dbg="unlock">UNLOCK</button><span class="dbg-msg" id="dbgAuthMsg"></span></div>';
+document.body.appendChild(dbgAuth);
+const dbgPass=dbgAuth.querySelector('#dbgPass');
+const dbgAuthMsg=dbgAuth.querySelector('#dbgAuthMsg');
 const dbgPanel=document.createElement('div');
 dbgPanel.id='debugPanel';
 dbgPanel.innerHTML='<div class="dbg-head"><b>BEATHIM DEBUG</b><span class="dbg-hint">RIGHT SHIFT toggle</span><button class="dbg-btn" data-dbg="clear">CLEAR</button><button class="dbg-btn" data-dbg="copy">COPY STATE</button></div>'
@@ -191,7 +202,7 @@ dbgPanel.innerHTML='<div class="dbg-head"><b>BEATHIM DEBUG</b><span class="dbg-h
   +'<button class="dbg-btn dbg-flybtn" data-dbg="flyon">ON</button>'
   +'<button class="dbg-btn dbg-flybtn" data-dbg="flyoff">OFF</button>'
   +'<label class="dbg-flylabel">SPEED <input id="dbgFlySpeed" type="number" min="1" max="80" step="1" value="14" /></label>'
-  +'<span class="dbg-tip">Space up / Ctrl down</span></div>'
+  +'<span class="dbg-tip">Space up / Shift down</span></div>'
   +'<div class="dbg-log" id="dbgLog"></div>'
   +'<div class="dbg-row"><span class="dbg-caret">&gt;</span><input id="dbgInput" autocomplete="off" spellcheck="false" placeholder="JS: player.pos.set(0,2.2,0)" /></div>'
   +'<div class="dbg-foot">scope: player | bots | scene | camera | weapons | keys | THREE</div>';
@@ -288,19 +299,47 @@ function dbgLockMouse(){
   const request=renderer.domElement.requestPointerLock();
   if(request&&request.catch)request.catch(()=>{});
 }
+function dbgAuthVisible(){return dbgAuth.classList.contains('open');}
+function dbgShowAuth(show){
+  dbgAuth.classList.toggle('open',show);
+  if(show){
+    dbgAuthMsg.textContent='';
+    dbgPass.value='';
+    dbgPass.focus();
+  }else dbgPass.blur();
+}
+function dbgUnlock(){
+  if(dbgPass.value!==DEBUG_PASSWORD){
+    dbgAuthMsg.textContent='WRONG PASSWORD';
+    dbgPass.value='';
+    dbgPass.focus();
+    return;
+  }
+  dbgAuthed=true;
+  try{sessionStorage.setItem('beathim-debug-auth','1');}catch(error){}
+  dbgShowAuth(false);
+  dbgToggle(true);
+}
 function dbgToggle(force){
-  dbg.open=force===undefined?!dbg.open:force;
+  const visible=dbg.open||dbgAuthVisible();
+  const wantOpen=force===undefined?!visible:force;
   keys.ShiftRight=false;
-  dbgPanel.classList.toggle('open',dbg.open);
-  document.body.classList.toggle('dbg-open',dbg.open);
-  if(dbg.open){
-    // Release the mouse so the cursor is usable, then show the live panel.
-    if(document.pointerLockElement)document.exitPointerLock();
-    dbgRenderLog();dbgSyncFly();dbgRefresh();
-  }else{
+  if(!wantOpen){
+    dbg.open=false;
+    dbgPanel.classList.remove('open');
+    dbgShowAuth(false);
+    document.body.classList.remove('dbg-open');
     dbgInput.blur();
     dbgLockMouse();
+    return;
   }
+  // The console needs the cursor, so always release pointer lock while it is up.
+  if(document.pointerLockElement)document.exitPointerLock();
+  document.body.classList.add('dbg-open');
+  if(!dbgAuthed){dbgShowAuth(true);return;}
+  dbg.open=true;
+  dbgPanel.classList.add('open');
+  dbgRenderLog();dbgSyncFly();dbgRefresh();
 }
 function dbgEval(code){return eval(code);}
 function dbgRun(code){
@@ -341,6 +380,16 @@ dbgPanel.addEventListener('click',e=>{
     else dbgAppend('info',text);
   }
 });
+dbgAuth.addEventListener('click',e=>{
+  const action=e.target.dataset?e.target.dataset.dbg:null;
+  if(action==='unlock')dbgUnlock();
+});
+dbgPass.addEventListener('keydown',e=>{
+  e.stopPropagation();
+  if(e.key==='Enter'){e.preventDefault();dbgUnlock();}
+  else if(e.key==='Escape'){e.preventDefault();dbgToggle(false);}
+});
+dbgPass.addEventListener('focus',()=>{if(document.pointerLockElement)document.exitPointerLock();});
 addEventListener('keydown',e=>{if(e.code==='ShiftRight'&&!e.repeat){e.preventDefault();dbgToggle();}},true);
 // If the mouse is ever loose outside the console, clicking the game grabs it again.
 renderer.domElement.addEventListener('mousedown',()=>{if(!locked&&!dbg.open)dbgLockMouse();});
