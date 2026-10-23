@@ -74,3 +74,4 @@ button { border: 0; border-radius: 9px; padding: 13px 28px; background: linear-g
 .dbg-flylabel { display: flex; align-items: center; gap: 5px; color: #7590b3; font-size: 9px; letter-spacing: .08em; }
 #dbgFlySpeed { width: 54px; padding: 2px 4px; color: #eaf9ff; background: #0d1526; border: 1px solid rgba(120,180,255,.3); border-radius: 4px; font-family: inherit; font-size: 11px; }
 .dbg-tip { margin-left: auto; color: #4f6484; font-size: 9px; letter-spacing: .04em; }
+body.dbg-open #game canvas, body.dbg-open { cursor: default; }

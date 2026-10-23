@@ -283,11 +283,24 @@ function dbgRefresh(){
   ];
   dbgStatsEl.innerHTML=rows.map(row=>'<div class="dbg-k">'+row[0]+'</div><div class="dbg-v">'+String(row[1])+'</div>').join('');
 }
+function dbgLockMouse(){
+  if(document.pointerLockElement||gameMode==='lobby')return;
+  const request=renderer.domElement.requestPointerLock();
+  if(request&&request.catch)request.catch(()=>{});
+}
 function dbgToggle(force){
   dbg.open=force===undefined?!dbg.open:force;
   keys.ShiftRight=false;
   dbgPanel.classList.toggle('open',dbg.open);
-  if(dbg.open){dbgRenderLog();dbgSyncFly();dbgRefresh();}else dbgInput.blur();
+  document.body.classList.toggle('dbg-open',dbg.open);
+  if(dbg.open){
+    // Release the mouse so the cursor is usable, then show the live panel.
+    if(document.pointerLockElement)document.exitPointerLock();
+    dbgRenderLog();dbgSyncFly();dbgRefresh();
+  }else{
+    dbgInput.blur();
+    dbgLockMouse();
+  }
 }
 function dbgEval(code){return eval(code);}
 function dbgRun(code){
@@ -329,6 +342,8 @@ dbgPanel.addEventListener('click',e=>{
   }
 });
 addEventListener('keydown',e=>{if(e.code==='ShiftRight'&&!e.repeat){e.preventDefault();dbgToggle();}},true);
+// If the mouse is ever loose outside the console, clicking the game grabs it again.
+renderer.domElement.addEventListener('mousedown',()=>{if(!locked&&!dbg.open)dbgLockMouse();});
 window.BEATHIM={player,bots,scene,camera,keys,weapons,THREE,startGame,setWeapon,damageBot,blocked,scytheDash,dbg,dbgToggle,dbgSetFly,update,setFly:dbgSetFly};
 
 function loop(){requestAnimationFrame(loop);const dt=Math.min(clock.getDelta(),.05);update(dt);renderer.render(scene,camera);dbg.frames++;dbg.acc+=dt;if(dbg.acc>=.5){dbg.fps=dbg.frames/dbg.acc;dbg.frames=0;dbg.acc=0;}if(dbg.open)dbgRefresh();} loop();
