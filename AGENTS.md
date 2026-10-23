@@ -25,7 +25,12 @@ git push
 Serve the folder locally and check the page/console, e.g.:
 
 ```
-python3 -m http.server 8731
+python3 serve.py 8731
 ```
 
 Then open `http://127.0.0.1:8731/index.html`.
+
+`serve.py` sends `Cache-Control: no-store`, so edits always show up (plain
+`python3 -m http.server` lets the browser cache `game.js`/`style.css`).
+
+In game, press **Right Shift** for the debug console (stats, logs, fly mode, JS prompt).

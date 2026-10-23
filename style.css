@@ -68,3 +68,9 @@ button { border: 0; border-radius: 9px; padding: 13px 28px; background: linear-g
 #dbgInput { flex: 1; min-width: 0; padding: 0; color: #eaf9ff; background: transparent; border: 0; outline: none; font-family: inherit; font-size: 11px; }
 #dbgInput::placeholder { color: #4c5e7c; }
 .dbg-foot { color: #55688a; font-size: 9px; letter-spacing: .04em; }
+.dbg-fly { display: flex; align-items: center; gap: 8px; padding: 6px; background: rgba(0,0,0,.4); border: 1px solid rgba(92,214,255,.16); border-radius: 6px; }
+.dbg-flybtn.on { color: #04202b; background: #6cd9ff; border-color: #6cd9ff; font-weight: 700; }
+.dbg-flybtn { min-width: 40px; }
+.dbg-flylabel { display: flex; align-items: center; gap: 5px; color: #7590b3; font-size: 9px; letter-spacing: .08em; }
+#dbgFlySpeed { width: 54px; padding: 2px 4px; color: #eaf9ff; background: #0d1526; border: 1px solid rgba(120,180,255,.3); border-radius: 4px; font-family: inherit; font-size: 11px; }
+.dbg-tip { margin-left: auto; color: #4f6484; font-size: 9px; letter-spacing: .04em; }
